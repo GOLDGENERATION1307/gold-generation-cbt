@@ -240,6 +240,58 @@ footer {
         font-size: 55px;
     }
 }
+/* =========================
+   PENGATURAN CETAK / PDF
+   ========================= */
+@media print {
+
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #172033 !important;
+    margin: 0 !important;
+  }
+
+  button,
+  .result-actions {
+    display: none !important;
+  }
+
+  header {
+    background: #0b1f4d !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .card {
+    box-shadow: none !important;
+    margin-bottom: 10px !important;
+    padding: 14px !important;
+  }
+
+  #reviewContainer,
+  #reviewContainer > * {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  h1, h2, h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  footer {
+    margin-top: 15px !important;
+    padding: 10px !important;
+    break-before: auto !important;
+    page-break-before: auto !important;
+  }
+}
 </style>
 </head>
 

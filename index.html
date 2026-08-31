@@ -274,11 +274,30 @@ footer {
     padding: 14px !important;
   }
 
-  #reviewContainer,
-  #reviewContainer > * {
-    break-inside: auto;
-    page-break-inside: auto;
-  }
+  #reviewContainer {
+    width: 100%;
+}
+
+.review-item {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    margin-bottom: 8px !important;
+}
+.review-item h3 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+.review-item p {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+.review {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+}
 
   h1, h2, h3 {
     break-after: avoid;

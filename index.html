@@ -278,9 +278,36 @@ footer {
     padding: 8px !important;
   }
 
-  #reviewContainer {
+ #reviewContainer {
     width: 100% !important;
-  }
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    column-gap: 12px !important;
+    row-gap: 0 !important;
+    align-items: start !important;
+}
+
+.review-item {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    margin: 0 0 5px 0 !important;
+    padding: 7px 8px !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    border-left-width: 3px !important;
+}
+
+.review-item h3 {
+    font-size: 12px !important;
+    margin: 0 0 4px 0 !important;
+}
+
+.review-item p {
+    font-size: 10px !important;
+    margin: 2px 0 !important;
+    line-height: 1.2 !important;
+}
 
   .review {
     break-inside: auto !important;

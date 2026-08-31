@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gold Generation CBT</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #172033;
+}
+
+header {
+    background: linear-gradient(135deg, #0b1f4d, #164fa3);
+    color: white;
+    padding: 22px;
+    text-align: center;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.subtitle {
+    margin-top: 6px;
+    opacity: 0.9;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+h1, h2, h3 {
+    margin-top: 0;
+}
+
+input, select {
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0 16px;
+    border: 1px solid #d5dbe7;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+button {
+    border: none;
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #0d8f4f;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #08783f;
+}
+
+.btn-blue {
+    background: #1558b0;
+    color: white;
+}
+
+.btn-gray {
+    background: #e8edf5;
+    color: #172033;
+}
+
+.hidden {
+    display: none;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.info-box {
+    background: #f4f7fb;
+    padding: 18px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.info-number {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1558b0;
+}
+
+.question {
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.option {
+    display: block;
+    padding: 15px;
+    margin: 10px 0;
+    border: 2px solid #e1e6ef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.option:hover {
+    background: #f1f6ff;
+    border-color: #1558b0;
+}
+
+.option.selected {
+    background: #e4efff;
+    border-color: #1558b0;
+}
+
+.option input {
+    width: auto;
+    margin-right: 10px;
+}
+
+.timer {
+    position: sticky;
+    top: 10px;
+    z-index: 10;
+    background: #111c36;
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.question-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.number-btn {
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    background: #e8edf5;
+}
+
+.number-btn.active {
+    background: #1558b0;
+    color: white;
+}
+
+.number-btn.answered {
+    background: #0d8f4f;
+    color: white;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.result {
+    text-align: center;
+}
+
+.score {
+    font-size: 70px;
+    font-weight: bold;
+    color: #1558b0;
+}
+
+.review {
+    margin-top: 25px;
+}
+
+.review-item {
+    background: #f8fafc;
+    border-left: 5px solid #1558b0;
+    padding: 18px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+
+.correct {
+    color: #0d8f4f;
+    font-weight: bold;
+}
+
+.wrong {
+    color: #d62828;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+@media(max-width:700px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .question {
+        font-size: 17px;
+    }
+
+    .score {
+        font-size: 55px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🏆 GOLD GENERATION CBT</div>
+    <div class="subtitle">
+        Try Out Online • Penilaian Otomatis • Pembahasan Soal
+    </div>
+</header>
+
+<div class="container">
+
+<!-- HALAMAN AWAL -->
+<section id="startPage">
+
+    <div class="card">
+        <h1>Selamat Datang 👋</h1>
+
+        <p>
+            Selamat datang di platform Try Out CBT
+            <b>Gold Generation</b>.
+        </p>
+
+        <p>
+            Kerjakan soal dengan teliti dan lihat hasil serta
+            pembahasan setelah menyelesaikan ujian.
+        </p>
+    </div>
+
+    <div class="card">
+
+        <h2>Data Peserta</h2>
+
+        <label>Nama Lengkap</label>
+        <input
+            type="text"
+            id="studentName"
+            placeholder="Masukkan nama lengkap"
+        >
+
+        <label>Kelas</label>
+        <input
+            type="text"
+            id="studentClass"
+            placeholder="Contoh: 12 KUMER 26 A"
+        >
+
+        <label>Pilih Mata Pelajaran</label>
+
+        <select id="subject">
+            <option value="Matematika">Matematika</option>
+            <option value="Kimia">Kimia</option>
+            <option value="Fisika">Fisika</option>
+            <option value="Bahasa Inggris">Bahasa Inggris</option>
+        </select>
+
+        <button
+            class="btn-primary"
+            onclick="startExam()"
+        >
+            🚀 MULAI TRY OUT
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Informasi Try Out</h2>
+
+        <div class="info-grid">
+
+            <div class="info-box">
+                <div class="info-number">10</div>
+                <div>Jumlah Soal</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-number">30</div>
+                <div>Menit</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-number">100</div>
+                <div>Nilai Maksimal</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- HALAMAN UJIAN -->
+<section id="examPage" class="hidden">
+
+    <div class="timer">
+        ⏱️ Waktu tersisa:
+        <span id="timer">30:00</span>
+    </div>
+
+    <div class="card">
+
+        <div>
+            <b id="studentInfo"></b>
+        </div>
+
+        <div class="question-nav" id="questionNav"></div>
+
+    </div>
+
+    <div class="card">
+
+        <div id="questionNumber"></div>
+
+        <div
+            class="question"
+            id="questionText">
+        </div>
+
+        <div id="options"></div>
+
+        <div class="navigation">
+
+            <button
+                class="btn-gray"
+                onclick="previousQuestion()">
+                ← Sebelumnya
+            </button>
+
+            <button
+                class="btn-blue"
+                onclick="nextQuestion()">
+                Selanjutnya →
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <button
+            class="btn-primary"
+            onclick="finishExam()">
+            ✅ SELESAI & LIHAT HASIL
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- HALAMAN HASIL -->
+<section id="resultPage" class="hidden">
+
+    <div class="card result">
+
+        <h1>🎉 TRY OUT SELESAI</h1>
+
+        <p id="resultStudent"></p>
+
+        <div class="score" id="finalScore">
+            0
+        </div>
+
+        <h2 id="resultMessage"></h2>
+
+        <div class="info-grid">
+
+            <div class="info-box">
+                <div class="info-number" id="correctCount">
+                    0
+                </div>
+                <div>Jawaban Benar</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-number" id="wrongCount">
+                    0
+                </div>
+                <div>Jawaban Salah</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-number" id="emptyCount">
+                    0
+                </div>
+                <div>Tidak Dijawab</div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card review">
+
+        <h2>📖 Pembahasan Soal</h2>
+
+        <div id="reviewContainer"></div>
+
+    </div>
+
+
+    <div class="card">
+
+        <button
+            class="btn-blue"
+            onclick="location.reload()">
+            🔄 KEMBALI KE HALAMAN AWAL
+        </button>
+
+    </div>
+
+</section>
+
+</div>
+
+
+<footer>
+    GOLD GENERATION © 2026
+    <br>
+    Start With a Dream, Finish With a Future
+</footer>
+
+
+<script>
+
+const questions = [
+
+{
+    question:
+    "Jika 2x + 5 = 15, maka nilai x adalah ...",
+
+    options: [
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+    ],
+
+    answer: 2,
+
+    explanation:
+    "2x + 5 = 15. Maka 2x = 10 sehingga x = 5."
+},
+
+{
+    question:
+    "Hasil dari 12 × 8 adalah ...",
+
+    options: [
+        "86",
+        "96",
+        "106",
+        "116",
+        "126"
+    ],
+
+    answer: 1,
+
+    explanation:
+    "12 × 8 = 96."
+},
+
+{
+    question:
+    "Jika sebuah segitiga memiliki alas 10 cm dan tinggi 8 cm, luasnya adalah ...",
+
+    options: [
+        "20 cm²",
+        "30 cm²",
+        "40 cm²",
+        "50 cm²",
+        "80 cm²"
+    ],
+
+    answer: 2,
+
+    explanation:
+    "Luas segitiga = ½ × alas × tinggi = ½ × 10 × 8 = 40 cm²."
+},
+
+{
+    question:
+    "Hasil dari 25% × 200 adalah ...",
+
+    options: [
+        "25",
+        "40",
+        "50",
+        "75",
+        "100"
+    ],
+
+    answer: 2,
+
+    explanation:
+    "25% = 25/100. Jadi 25/100 × 200 = 50."
+},
+
+{
+    question:
+    "Jika f(x) = 2x + 3, maka f(4) adalah ...",
+
+    options: [
+        "7",
+        "9",
+        "10",
+        "11",
+        "12"
+    ],
+
+    answer: 3,
+
+    explanation:
+    "f(4) = 2(4) + 3 = 8 + 3 = 11."
+},
+
+{
+    question:
+    "Bilangan prima berikut adalah ...",
+
+    options: [
+        "21",
+        "27",
+        "29",
+        "33",
+        "39"
+    ],
+
+    answer: 2,
+
+    explanation:
+    "29 hanya memiliki faktor 1 dan 29 sehingga merupakan bilangan prima."
+},
+
+{
+    question:
+    "Akar kuadrat dari 144 adalah ...",
+
+    options: [
+        "10",
+        "11",
+        "12",
+        "13",
+        "14"
+    ],
+
+    answer: 2,
+
+    explanation:
+    "12 × 12 = 144, sehingga √144 = 12."
+},
+
+{
+    question:
+    "Jika 3x = 27, maka x adalah ...",
+
+    options: [
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+    ],
+
+    answer: 3,
+
+    explanation:
+    "3x = 27 sehingga x = 27 ÷ 3 = 9."
+},
+
+{
+    question:
+    "Hasil dari 5² + 3² adalah ...",
+
+    options: [
+        "25",
+        "28",
+        "30",
+        "34",
+        "36"
+    ],
+
+    answer: 3,
+
+    explanation:
+    "5² + 3² = 25 + 9 = 34."
+},
+
+{
+    question:
+    "Jika rata-rata dari 6, 8, dan 10 adalah ...",
+
+    options: [
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+    ],
+
+    answer: 2,
+
+    explanation:
+    "Rata-rata = (6 + 8 + 10) ÷ 3 = 24 ÷ 3 = 8."
+}
+
+];
+
+
+let currentQuestion = 0;
+let answers = [];
+let timeLeft = 30 * 60;
+let timerInterval;
+
+let studentName = "";
+let studentClass = "";
+let subject = "";
+
+
+function startExam() {
+
+    studentName =
+        document.getElementById("studentName").value.trim();
+
+    studentClass =
+        document.getElementById("studentClass").value.trim();
+
+    subject =
+        document.getElementById("subject").value;
+
+    if (!studentName) {
+        alert("Silakan masukkan nama lengkap.");
+        return;
+    }
+
+    if (!studentClass) {
+        alert("Silakan masukkan kelas.");
+        return;
+    }
+
+    answers = new Array(questions.length).fill(null);
+
+    document.getElementById("startPage")
+        .classList.add("hidden");
+
+    document.getElementById("examPage")
+        .classList.remove("hidden");
+
+    document.getElementById("studentInfo")
+        .innerText =
+        studentName + " • " +
+        studentClass + " • " +
+        subject;
+
+    createQuestionNavigation();
+
+    showQuestion();
+
+    startTimer();
+}
+
+
+function createQuestionNavigation() {
+
+    const nav =
+        document.getElementById("questionNav");
+
+    nav.innerHTML = "";
+
+    questions.forEach((q, index) => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "number-btn";
+
+        button.innerText = index + 1;
+
+        button.onclick = function() {
+
+            currentQuestion = index;
+
+            showQuestion();
+
+        };
+
+        nav.appendChild(button);
+
+    });
+}
+
+
+function showQuestion() {
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionNumber")
+        .innerText =
+        "Soal " +
+        (currentQuestion + 1) +
+        " dari " +
+        questions.length;
+
+    document.getElementById("questionText")
+        .innerText = q.question;
+
+    const options =
+        document.getElementById("options");
+
+    options.innerHTML = "";
+
+    q.options.forEach((option, index) => {
+
+        const label =
+            document.createElement("label");
+
+        label.className = "option";
+
+        if (answers[currentQuestion] === index) {
+            label.classList.add("selected");
+        }
+
+        label.innerHTML = `
+            <input
+                type="radio"
+                name="answer"
+                value="${index}"
+                ${answers[currentQuestion] === index ? "checked" : ""}
+            >
+            ${String.fromCharCode(65 + index)}.
+            ${option}
+        `;
+
+        label.onclick = function() {
+
+            answers[currentQuestion] = index;
+
+            showQuestion();
+
+        };
+
+        options.appendChild(label);
+
+    });
+
+    updateNavigationButtons();
+}
+
+
+function updateNavigationButtons() {
+
+    const buttons =
+        document.querySelectorAll(".number-btn");
+
+    buttons.forEach((button, index) => {
+
+        button.classList.remove("active");
+        button.classList.remove("answered");
+
+        if (index === currentQuestion) {
+            button.classList.add("active");
+        }
+
+        if (answers[index] !== null) {
+            button.classList.add("answered");
+        }
+
+    });
+
+}
+
+
+function nextQuestion() {
+
+    if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+
+        showQuestion();
+
+    }
+
+}
+
+
+function previousQuestion() {
+
+    if (currentQuestion > 0) {
+
+        currentQuestion--;
+
+        showQuestion();
+
+    }
+
+}
+
+
+function startTimer() {
+
+    timerInterval =
+        setInterval(function() {
+
+            timeLeft--;
+
+            const minutes =
+                Math.floor(timeLeft / 60);
+
+            const seconds =
+                timeLeft % 60;
+
+            document.getElementById("timer")
+                .innerText =
+                String(minutes).padStart(2, "0")
+                + ":" +
+                String(seconds).padStart(2, "0");
+
+            if (timeLeft <= 0) {
+
+                clearInterval(timerInterval);
+
+                alert(
+                    "Waktu ujian telah habis."
+                );
+
+                finishExam();
+
+            }
+
+        }, 1000);
+
+}
+
+
+function finishExam() {
+
+    const confirmFinish =
+        confirm(
+            "Apakah Anda yakin ingin mengakhiri ujian?"
+        );
+
+    if (!confirmFinish) {
+        return;
+    }
+
+    clearInterval(timerInterval);
+
+    calculateResult();
+
+}
+
+
+function calculateResult() {
+
+    let correct = 0;
+    let wrong = 0;
+    let empty = 0;
+
+    questions.forEach((q, index) => {
+
+        if (answers[index] === null) {
+
+            empty++;
+
+        }
+        else if (answers[index] === q.answer) {
+
+            correct++;
+
+        }
+        else {
+
+            wrong++;
+
+        }
+
+    });
+
+    const score =
+        Math.round(
+            (correct / questions.length) * 100
+        );
+
+    document.getElementById("examPage")
+        .classList.add("hidden");
+
+    document.getElementById("resultPage")
+        .classList.remove("hidden");
+
+    document.getElementById("resultStudent")
+        .innerText =
+        studentName +
+        " • " +
+        studentClass +
+        " • " +
+        subject;
+
+    document.getElementById("finalScore")
+        .innerText = score;
+
+    document.getElementById("correctCount")
+        .innerText = correct;
+
+    document.getElementById("wrongCount")
+        .innerText = wrong;
+
+    document.getElementById("emptyCount")
+        .innerText = empty;
+
+    let message = "";
+
+    if (score >= 90) {
+
+        message =
+            "🏆 Luar biasa! Pertahankan prestasimu!";
+
+    }
+    else if (score >= 75) {
+
+        message =
+            "👏 Bagus! Tingkatkan lagi hasil belajarmu.";
+
+    }
+    else if (score >= 60) {
+
+        message =
+            "💪 Tetap semangat. Masih bisa ditingkatkan!";
+
+    }
+    else {
+
+        message =
+            "📚 Jangan menyerah. Mari belajar lebih giat lagi.";
+
+    }
+
+    document.getElementById("resultMessage")
+        .innerText = message;
+
+    showReview();
+
+}
+
+
+function showReview() {
+
+    const container =
+        document.getElementById("reviewContainer");
+
+    container.innerHTML = "";
+
+    questions.forEach((q, index) => {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "review-item";
+
+        const userAnswer =
+            answers[index] === null
+            ? "Tidak dijawab"
+            : q.options[answers[index]];
+
+        const correctAnswer =
+            q.options[q.answer];
+
+        const status =
+            answers[index] === q.answer
+            ? '<span class="correct">✓ BENAR</span>'
+            : '<span class="wrong">✗ SALAH</span>';
+
+        item.innerHTML = `
+
+            <h3>
+                Soal ${index + 1}
+                ${status}
+            </h3>
+
+            <p>
+                <b>${q.question}</b>
+            </p>
+
+            <p>
+                Jawaban Anda:
+                <b>${userAnswer}</b>
+            </p>
+
+            <p>
+                Jawaban benar:
+                <b>${correctAnswer}</b>
+            </p>
+
+            <p>
+                <b>📖 Pembahasan:</b><br>
+                ${q.explanation}
+            </p>
+
+        `;
+
+        container.appendChild(item);
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>

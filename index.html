@@ -268,36 +268,41 @@ footer {
     print-color-adjust: exact;
   }
 
-  .card {
+.card {
     box-shadow: none !important;
-    margin-bottom: 10px !important;
-    padding: 14px !important;
-  }
+    margin-bottom: 6px !important;
+    padding: 10px !important;
+}
 
-  #reviewContainer {
-    width: 100%;
+.review {
+    margin-top: 10px !important;
+}
+
+#reviewContainer {
+    width: 100% !important;
 }
 
 .review-item {
-    break-inside: auto !important;
-    page-break-inside: auto !important;
-    -webkit-column-break-inside: auto !important;
-    margin-bottom: 6px !important;
+    padding: 10px !important;
+    margin-bottom: 5px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
 }
 
 .review-item h3 {
+    margin: 0 0 5px 0 !important;
     break-after: avoid !important;
     page-break-after: avoid !important;
 }
 
 .review-item p {
-    break-inside: auto !important;
-    page-break-inside: auto !important;
+    margin: 4px 0 !important;
 }
 
-.review {
-    break-inside: auto !important;
-    page-break-inside: auto !important;
+#reviewContainer,
+#reviewContainer > * {
+    break-inside: auto;
+    page-break-inside: auto;
 }
 
   h1, h2, h3 {

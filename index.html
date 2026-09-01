@@ -1197,5 +1197,568 @@ function showReview() {
 
 </script>
 
+<!-- =========================
+     DASHBOARD PENGAJAR
+     GOLD GENERATION CBT
+     ========================= -->
+
+<style>
+#teacherButton {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 9999;
+    background: linear-gradient(135deg,#d4af37,#f5d76e);
+    color: #172033;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 20px;
+    font-weight: bold;
+    box-shadow: 0 8px 25px rgba(0,0,0,.2);
+    cursor: pointer;
+}
+
+#teacherDashboard {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 10000;
+    overflow-y: auto;
+    padding: 25px;
+}
+
+.teacher-box {
+    max-width: 900px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 15px 50px rgba(0,0,0,.3);
+}
+
+.teacher-header {
+    background: linear-gradient(135deg,#0b1f4d,#164fa3);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.teacher-header h2 {
+    margin: 0 0 5px 0;
+}
+
+.teacher-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.teacher-field {
+    margin-bottom: 12px;
+}
+
+.teacher-field.full {
+    grid-column: 1 / -1;
+}
+
+.teacher-field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.teacher-field input,
+.teacher-field textarea,
+.teacher-field select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d5dbe7;
+    border-radius: 10px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.teacher-field textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.teacher-options {
+    background: #f4f7fb;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+.teacher-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.teacher-save {
+    background: #0d8f4f;
+    color: white;
+}
+
+.teacher-next {
+    background: #1558b0;
+    color: white;
+}
+
+.teacher-close {
+    background: #e8edf5;
+    color: #172033;
+}
+
+.teacher-status {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #eef6ff;
+    color: #1558b0;
+    font-weight: bold;
+}
+
+.question-counter {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1558b0;
+    margin-bottom: 15px;
+}
+
+@media(max-width:700px) {
+    #teacherDashboard {
+        padding: 10px;
+    }
+
+    .teacher-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-field.full {
+        grid-column: auto;
+    }
+
+    .teacher-box {
+        padding: 15px;
+    }
+}
+</style>
+
+<!-- TOMBOL DASHBOARD -->
+<button id="teacherButton" onclick="openTeacherDashboard()">
+    👨‍🏫 DASHBOARD PENGAJAR
+</button>
+
+<!-- DASHBOARD -->
+<div id="teacherDashboard">
+
+    <div class="teacher-box">
+
+        <div class="teacher-header">
+            <h2>👨‍🏫 Dashboard Pengajar</h2>
+            <div>GOLD GENERATION CBT</div>
+        </div>
+
+        <div class="question-counter">
+            Soal <span id="teacherQuestionNumber">1</span> dari 30
+        </div>
+
+        <div class="teacher-grid">
+
+            <div class="teacher-field">
+                <label>Mata Pelajaran</label>
+
+                <select id="teacherSubject">
+                    <option value="Matematika">Matematika</option>
+                    <option value="Kimia">Kimia</option>
+                    <option value="Fisika">Fisika</option>
+                    <option value="Bahasa Inggris">Bahasa Inggris</option>
+                    <option value="Biologi">Biologi</option>
+                    <option value="Sejarah">Sejarah</option>
+                </select>
+            </div>
+
+            <div class="teacher-field">
+                <label>Tingkat Kesulitan</label>
+
+                <select id="teacherDifficulty">
+                    <option value="easy">Mudah</option>
+                    <option value="medium" selected>Sedang</option>
+                    <option value="hard">Sulit</option>
+                </select>
+            </div>
+
+            <div class="teacher-field full">
+
+                <label>Pertanyaan</label>
+
+                <textarea
+                    id="teacherQuestion"
+                    placeholder="Tuliskan soal di sini..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+        <div class="teacher-options">
+
+            <h3>📝 Pilihan Jawaban</h3>
+
+            <div class="teacher-field">
+                <label>A</label>
+                <input
+                    type="text"
+                    id="teacherOptionA"
+                    placeholder="Pilihan A"
+                >
+            </div>
+
+            <div class="teacher-field">
+                <label>B</label>
+                <input
+                    type="text"
+                    id="teacherOptionB"
+                    placeholder="Pilihan B"
+                >
+            </div>
+
+            <div class="teacher-field">
+                <label>C</label>
+                <input
+                    type="text"
+                    id="teacherOptionC"
+                    placeholder="Pilihan C"
+                >
+            </div>
+
+            <div class="teacher-field">
+                <label>D</label>
+                <input
+                    type="text"
+                    id="teacherOptionD"
+                    placeholder="Pilihan D"
+                >
+            </div>
+
+            <div class="teacher-field">
+                <label>E</label>
+                <input
+                    type="text"
+                    id="teacherOptionE"
+                    placeholder="Pilihan E"
+                >
+            </div>
+
+            <div class="teacher-field">
+                <label>Jawaban Benar</label>
+
+                <select id="teacherCorrectAnswer">
+                    <option value="">-- Pilih Jawaban --</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="teacher-field">
+
+            <label>📖 Pembahasan Soal</label>
+
+            <textarea
+                id="teacherExplanation"
+                placeholder="Tuliskan pembahasan atau langkah penyelesaian soal..."
+            ></textarea>
+
+        </div>
+
+        <div class="teacher-field">
+
+            <label>Poin</label>
+
+            <input
+                type="number"
+                id="teacherPoints"
+                value="1"
+                min="1"
+            >
+
+        </div>
+
+        <div class="teacher-actions">
+
+            <button
+                class="teacher-save"
+                onclick="saveTeacherQuestion()">
+                💾 SIMPAN SOAL
+            </button>
+
+            <button
+                class="teacher-next"
+                onclick="nextTeacherQuestion()">
+                ➡️ SOAL BERIKUTNYA
+            </button>
+
+            <button
+                class="teacher-close"
+                onclick="closeTeacherDashboard()">
+                ✖️ TUTUP
+            </button>
+
+        </div>
+
+        <div
+            id="teacherStatus"
+            class="teacher-status">
+            Silakan masukkan Soal 1.
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let teacherQuestionNumber = 1;
+
+let teacherQuestions = [];
+
+
+function openTeacherDashboard() {
+
+    document.getElementById("teacherDashboard")
+        .style.display = "block";
+
+}
+
+
+function closeTeacherDashboard() {
+
+    document.getElementById("teacherDashboard")
+        .style.display = "none";
+
+}
+
+
+function saveTeacherQuestion() {
+
+    const question =
+        document.getElementById("teacherQuestion")
+        .value.trim();
+
+    const optionA =
+        document.getElementById("teacherOptionA")
+        .value.trim();
+
+    const optionB =
+        document.getElementById("teacherOptionB")
+        .value.trim();
+
+    const optionC =
+        document.getElementById("teacherOptionC")
+        .value.trim();
+
+    const optionD =
+        document.getElementById("teacherOptionD")
+        .value.trim();
+
+    const optionE =
+        document.getElementById("teacherOptionE")
+        .value.trim();
+
+    const correct =
+        document.getElementById("teacherCorrectAnswer")
+        .value;
+
+    const explanation =
+        document.getElementById("teacherExplanation")
+        .value.trim();
+
+    const subject =
+        document.getElementById("teacherSubject")
+        .value;
+
+    const difficulty =
+        document.getElementById("teacherDifficulty")
+        .value;
+
+    const points =
+        Number(
+            document.getElementById("teacherPoints")
+            .value
+        );
+
+
+    if (!question) {
+
+        alert("Pertanyaan belum diisi.");
+
+        return;
+
+    }
+
+
+    if (
+        !optionA ||
+        !optionB ||
+        !optionC ||
+        !optionD ||
+        !optionE
+    ) {
+
+        alert("Semua pilihan A sampai E harus diisi.");
+
+        return;
+
+    }
+
+
+    if (!correct) {
+
+        alert("Silakan pilih jawaban yang benar.");
+
+        return;
+
+    }
+
+
+    if (!explanation) {
+
+        alert("Pembahasan soal belum diisi.");
+
+        return;
+
+    }
+
+
+    const questionData = {
+
+        question_number:
+            teacherQuestionNumber,
+
+        subject:
+            subject,
+
+        question_text:
+            question,
+
+        option_a:
+            optionA,
+
+        option_b:
+            optionB,
+
+        option_c:
+            optionC,
+
+        option_d:
+            optionD,
+
+        option_e:
+            optionE,
+
+        correct_answer:
+            correct,
+
+        explanation:
+            explanation,
+
+        difficulty:
+            difficulty,
+
+        points:
+            points
+
+    };
+
+
+    teacherQuestions[
+        teacherQuestionNumber - 1
+    ] = questionData;
+
+
+    localStorage.setItem(
+        "goldGenerationTeacherQuestions",
+        JSON.stringify(teacherQuestions)
+    );
+
+
+    document.getElementById("teacherStatus")
+        .innerText =
+        "✅ Soal " +
+        teacherQuestionNumber +
+        " berhasil disimpan sebagai draft.";
+
+}
+
+
+function nextTeacherQuestion() {
+
+    if (teacherQuestionNumber >= 30) {
+
+        alert(
+            "Sudah mencapai 30 soal. Semua soal sudah dapat dimasukkan."
+        );
+
+        return;
+
+    }
+
+
+    teacherQuestionNumber++;
+
+    document.getElementById(
+        "teacherQuestionNumber"
+    ).innerText =
+        teacherQuestionNumber;
+
+
+    clearTeacherForm();
+
+
+    document.getElementById("teacherStatus")
+        .innerText =
+        "Silakan masukkan Soal " +
+        teacherQuestionNumber +
+        ".";
+
+}
+
+
+function clearTeacherForm() {
+
+    document.getElementById("teacherQuestion").value = "";
+
+    document.getElementById("teacherOptionA").value = "";
+
+    document.getElementById("teacherOptionB").value = "";
+
+    document.getElementById("teacherOptionC").value = "";
+
+    document.getElementById("teacherOptionD").value = "";
+
+    document.getElementById("teacherOptionE").value = "";
+
+    document.getElementById("teacherCorrectAnswer").value = "";
+
+    document.getElementById("teacherExplanation").value = "";
+
+    document.getElementById("teacherDifficulty").value = "medium";
+
+    document.getElementById("teacherPoints").value = 1;
+
+}
+
+
+</script>
 </body>
 </html>

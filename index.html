@@ -392,7 +392,34 @@ footer {
         padding: 3px !important;
         font-size: 7px !important;
         line-height: 1.1 !important;
-    }
+    } /* PEMBAHASAN 2 KOLOM SAAT PRINT */
+#resultPage #reviewContainer {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    column-gap: 12px !important;
+    row-gap: 6px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    align-items: start !important;
+}
+
+#resultPage #reviewContainer .review-item {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+#resultPage #reviewContainer .review-item p {
+    margin: 2px 0 !important;
+}
+
+#resultPage #reviewContainer .review-item h3 {
+    margin: 0 0 2px 0 !important;
+}
 }
 </style>
 </head>

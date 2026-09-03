@@ -1549,7 +1549,7 @@ function closeTeacherDashboard() {
 }
 
 
-function saveTeacherQuestion() {
+async function saveTeacherQuestion() {
 
     const question =
         document.getElementById("teacherQuestion")
@@ -1598,14 +1598,14 @@ function saveTeacherQuestion() {
         );
 
 
+    /* =========================
+       VALIDASI
+       ========================= */
+
     if (!question) {
-
         alert("Pertanyaan belum diisi.");
-
         return;
-
     }
-
 
     if (
         !optionA ||
@@ -1614,31 +1614,94 @@ function saveTeacherQuestion() {
         !optionD ||
         !optionE
     ) {
-
         alert("Semua pilihan A sampai E harus diisi.");
-
         return;
-
     }
-
 
     if (!correct) {
-
         alert("Silakan pilih jawaban yang benar.");
-
         return;
-
     }
-
 
     if (!explanation) {
-
         alert("Pembahasan soal belum diisi.");
-
         return;
-
     }
 
+
+    /* =========================
+       CARI ID MATA PELAJARAN
+       ========================= */
+
+    const {
+        data: subjectData,
+        error: subjectError
+    } = await supabaseClient
+        .from("subjects")
+        .select("id")
+        .eq("name", subject)
+        .single();
+
+
+    if (subjectError || !subjectData) {
+
+        console.error(subjectError);
+
+        alert(
+            "Mata pelajaran tidak ditemukan di database Supabase."
+        );
+
+        return;
+    }
+
+
+    /* =========================
+       SIMPAN KE SUPABASE
+       ========================= */
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("questions")
+        .insert([{
+            subject_id: subjectData.id,
+            question_text: question,
+            question_type: "multiple_choice",
+            option_a: optionA,
+            option_b: optionB,
+            option_c: optionC,
+            option_d: optionD,
+            option_e: optionE,
+            correct_answer: correct,
+            explanation: explanation,
+            difficulty: difficulty,
+            points: points
+        }])
+        .select()
+        .single();
+
+
+    /* =========================
+       CEK HASIL
+       ========================= */
+
+    if (error) {
+
+        console.error("Supabase error:", error);
+
+        alert(
+            "❌ Soal belum berhasil disimpan ke Supabase.\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    /* =========================
+       SIMPAN JUGA KE LOCAL STORAGE
+       ========================= */
 
     const questionData = {
 
@@ -1676,8 +1739,10 @@ function saveTeacherQuestion() {
             difficulty,
 
         points:
-            points
+            points,
 
+        supabase_id:
+            data.id
     };
 
 
@@ -1692,14 +1757,21 @@ function saveTeacherQuestion() {
     );
 
 
+    /* =========================
+       STATUS
+       ========================= */
+
     document.getElementById("teacherStatus")
         .innerText =
         "✅ Soal " +
         teacherQuestionNumber +
-        " berhasil disimpan sebagai draft.";
+        " berhasil disimpan ke Supabase.";
 
+
+    alert(
+        "✅ Soal berhasil disimpan ke database Gold Generation CBT!"
+    );
 }
-
 
 function nextTeacherQuestion() {
 

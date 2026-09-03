@@ -1760,5 +1760,19 @@ function clearTeacherForm() {
 
 
 </script>
+    <!-- SUPABASE CONNECTION -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL ="https://gzpmhnbidjljxiwaoljp.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_iswXFlEMg2H2BW3d5M_NyA_lFaEzi-z";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
+console.log("✅ Supabase berhasil terhubung");
+</script>
 </body>
 </html>

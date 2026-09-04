@@ -1371,6 +1371,12 @@ function showReview() {
         <div class="teacher-grid">
 
             <div class="teacher-field">
+                <label>Jenjang</label>
+<select id="teacherLevel">
+  <option value="SMA">SMA</option>
+  <option value="SMP">SMP</option>
+  <option value="UTBK">UTBK</option>
+</select>
                 <label>Mata Pelajaran</label>
 
                 <select id="teacherSubject">
@@ -1774,7 +1780,73 @@ async function saveTeacherQuestion() {
     );
 }
 
-function nextTeacherQuestion() {
+// ========================================
+// PILIHAN MATA PELAJARAN BERDASARKAN JENJANG
+// ========================================
+
+const teacherSubjectsByLevel = {
+  SMA: [
+    "Matematika Wajib",
+    "Matematika Lanjut",
+    "Bahasa Indonesia",
+    "Bahasa Inggris",
+    "Bahasa Inggris Lanjut",
+    "Kimia",
+    "Fisika",
+    "Biologi",
+    "Sejarah",
+    "Sejarah Lanjut",
+    "Geografi",
+    "Ekonomi",
+    "Sosiologi"
+  ],
+
+  SMP: [
+    "IPA",
+    "IPS",
+    "Matematika",
+    "Bahasa Indonesia",
+    "Bahasa Inggris"
+  ],
+
+  UTBK: [
+    "Penalaran Matematika",
+    "Literasi Bahasa Indonesia",
+    "Literasi Bahasa Inggris",
+    "Penalaran Umum",
+    "Pengetahuan dan Pemahaman Umum",
+    "Pemahaman Bacaan dan Menulis",
+    "Pengetahuan Kuantitatif"
+  ]
+};
+
+function updateTeacherSubjects() {
+  const levelSelect = document.getElementById("teacherLevel");
+  const subjectSelect = document.getElementById("teacherSubject");
+
+  if (!levelSelect || !subjectSelect) return;
+
+  const level = levelSelect.value;
+  const subjects = teacherSubjectsByLevel[level] || [];
+
+  subjectSelect.innerHTML = "";
+
+  subjects.forEach(function(subject) {
+    const option = document.createElement("option");
+    option.value = subject;
+    option.textContent = subject;
+    subjectSelect.appendChild(option);
+  });
+}
+
+// Jalankan saat jenjang berubah
+document.getElementById("teacherLevel")
+  ?.addEventListener("change", updateTeacherSubjects);
+
+// Isi pilihan awal saat halaman dibuka
+updateTeacherSubjects();
+
+    function nextTeacherQuestion() {
 
     if (teacherQuestionNumber >= 30) {
 

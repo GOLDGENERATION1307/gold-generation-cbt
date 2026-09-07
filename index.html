@@ -1363,7 +1363,24 @@ function showReview() {
             <h2>👨‍🏫 Dashboard Pengajar</h2>
             <div>GOLD GENERATION CBT</div>
         </div>
-
+<div style="margin: 15px 0; text-align: center;">
+    <button
+        type="button"
+        onclick="openQuestionBank()"
+        style="
+            background: linear-gradient(135deg, #d4af37, #f5d76e);
+            color: #172033;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 22px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        ">
+        📚 BANK SOAL
+    </button>
+</div>
         <div class="question-counter">
             Soal <span id="teacherQuestionNumber">1</span> dari 30
         </div>
@@ -1903,7 +1920,479 @@ function clearTeacherForm() {
 
 }
 
+// ========================================
+// BANK SOAL PENGAJAR
+// ========================================
 
+let questionBankData = [];
+let questionBankSubjects = [];
+
+async function openQuestionBank() {
+    let modal = document.getElementById("questionBankModal");
+
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "questionBankModal";
+
+        modal.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 20000;
+            overflow-y: auto;
+            padding: 30px 15px;
+        `;
+
+        modal.innerHTML = `
+            <div style="
+                max-width:1100px;
+                margin:auto;
+                background:white;
+                border-radius:18px;
+                padding:25px;
+                box-shadow:0 10px 40px rgba(0,0,0,.3);
+            ">
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:15px;
+                    margin-bottom:20px;
+                ">
+                    <div>
+                        <h2 style="margin:0;color:#172033;">
+                            📚 BANK SOAL PENGAJAR
+                        </h2>
+                        <div style="margin-top:5px;color:#666;">
+                            GOLD GENERATION CBT
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onclick="closeQuestionBank()"
+                        style="
+                            border:none;
+                            background:#eee;
+                            border-radius:10px;
+                            padding:10px 15px;
+                            font-weight:bold;
+                            cursor:pointer;
+                        ">
+                        ✕ TUTUP
+                    </button>
+                </div>
+
+                <div style="
+                    display:grid;
+                    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+                    gap:10px;
+                    margin-bottom:20px;
+                ">
+
+                    <input
+                        id="bankSearch"
+                        type="text"
+                        placeholder="🔎 Cari soal..."
+                        oninput="filterQuestionBank()"
+                        style="
+                            padding:12px;
+                            border:1px solid #ddd;
+                            border-radius:10px;
+                            font-size:14px;
+                        "
+                    >
+
+                    <select
+                        id="bankLevel"
+                        onchange="filterQuestionBank()"
+                        style="
+                            padding:12px;
+                            border:1px solid #ddd;
+                            border-radius:10px;
+                            font-size:14px;
+                        ">
+                        <option value="">🏫 Semua Jenjang</option>
+                        <option value="SMA">SMA</option>
+                        <option value="SMP">SMP</option>
+                        <option value="UTBK">UTBK</option>
+                    </select>
+
+                    <select
+                        id="bankSubject"
+                        onchange="filterQuestionBank()"
+                        style="
+                            padding:12px;
+                            border:1px solid #ddd;
+                            border-radius:10px;
+                            font-size:14px;
+                        ">
+                        <option value="">📖 Semua Mata Pelajaran</option>
+                    </select>
+
+                    <select
+                        id="bankDifficulty"
+                        onchange="filterQuestionBank()"
+                        style="
+                            padding:12px;
+                            border:1px solid #ddd;
+                            border-radius:10px;
+                            font-size:14px;
+                        ">
+                        <option value="">⭐ Semua Kesulitan</option>
+                        <option value="easy">Mudah</option>
+                        <option value="medium">Sedang</option>
+                        <option value="hard">Sulit</option>
+                    </select>
+
+                </div>
+
+                <div id="questionBankStatus"
+                    style="
+                        padding:12px;
+                        background:#f5f7fa;
+                        border-radius:10px;
+                        margin-bottom:15px;
+                        color:#555;
+                    ">
+                    Memuat bank soal...
+                </div>
+
+                <div id="questionBankList"></div>
+
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    }
+
+    modal.style.display = "block";
+
+    await loadQuestionBank();
+}
+
+
+function closeQuestionBank() {
+    const modal = document.getElementById("questionBankModal");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+
+async function loadQuestionBank() {
+
+    const status = document.getElementById("questionBankStatus");
+    const list = document.getElementById("questionBankList");
+
+    if (!status || !list) return;
+
+    status.innerText = "⏳ Mengambil soal dari database Supabase...";
+    list.innerHTML = "";
+
+    const {
+        data: subjects,
+        error: subjectError
+    } = await supabaseClient
+        .from("subjects")
+        .select("id,name,level")
+        .order("level")
+        .order("name");
+
+    if (subjectError) {
+        status.innerText =
+            "❌ Gagal mengambil data mata pelajaran: " +
+            subjectError.message;
+        return;
+    }
+
+    questionBankSubjects = subjects || [];
+
+    const {
+        data: questions,
+        error: questionError
+    } = await supabaseClient
+        .from("questions")
+        .select(`
+            id,
+            subject_id,
+            question_text,
+            option_a,
+            option_b,
+            option_c,
+            option_d,
+            option_e,
+            correct_answer,
+            explanation,
+            difficulty,
+            points,
+            created_at
+        `)
+        .order("id", { ascending: false });
+
+    if (questionError) {
+        status.innerText =
+            "❌ Gagal mengambil bank soal: " +
+            questionError.message;
+        return;
+    }
+
+    questionBankData = (questions || []).map(function(question) {
+
+        const subject = questionBankSubjects.find(function(item) {
+            return item.id === question.subject_id;
+        });
+
+        return {
+            ...question,
+            subject_name: subject ? subject.name : "Tidak diketahui",
+            level: subject ? subject.level : "-"
+        };
+    });
+
+    populateQuestionBankSubjects();
+
+    status.innerText =
+        "✅ " + questionBankData.length +
+        " soal tersedia di Bank Soal.";
+
+    filterQuestionBank();
+}
+
+
+function populateQuestionBankSubjects() {
+
+    const select = document.getElementById("bankSubject");
+
+    if (!select) return;
+
+    select.innerHTML =
+        `<option value="">📖 Semua Mata Pelajaran</option>`;
+
+    questionBankSubjects.forEach(function(subject) {
+
+        const option = document.createElement("option");
+
+        option.value = subject.id;
+
+        option.textContent =
+            subject.level + " - " + subject.name;
+
+        select.appendChild(option);
+    });
+}
+
+
+function filterQuestionBank() {
+
+    const search =
+        (document.getElementById("bankSearch")?.value || "")
+        .toLowerCase()
+        .trim();
+
+    const level =
+        document.getElementById("bankLevel")?.value || "";
+
+    const subjectId =
+        document.getElementById("bankSubject")?.value || "";
+
+    const difficulty =
+        document.getElementById("bankDifficulty")?.value || "";
+
+    const filtered = questionBankData.filter(function(question) {
+
+        const matchesSearch =
+            !search ||
+            question.question_text.toLowerCase().includes(search);
+
+        const matchesLevel =
+            !level ||
+            question.level === level;
+
+        const matchesSubject =
+            !subjectId ||
+            String(question.subject_id) === String(subjectId);
+
+        const matchesDifficulty =
+            !difficulty ||
+            question.difficulty === difficulty;
+
+        return (
+            matchesSearch &&
+            matchesLevel &&
+            matchesSubject &&
+            matchesDifficulty
+        );
+    });
+
+    renderQuestionBank(filtered);
+}
+
+
+function renderQuestionBank(questions) {
+
+    const list =
+        document.getElementById("questionBankList");
+
+    const status =
+        document.getElementById("questionBankStatus");
+
+    if (!list) return;
+
+    if (status) {
+        status.innerText =
+            "📚 Menampilkan " +
+            questions.length +
+            " dari " +
+            questionBankData.length +
+            " soal.";
+    }
+
+    if (questions.length === 0) {
+
+        list.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:40px 20px;
+                color:#777;
+            ">
+                <div style="font-size:40px;">📭</div>
+                <h3>Soal tidak ditemukan</h3>
+                <p>Coba ubah pencarian atau filter.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    list.innerHTML = questions.map(function(question, index) {
+
+        const difficultyText = {
+            easy: "Mudah",
+            medium: "Sedang",
+            hard: "Sulit"
+        };
+
+        return `
+            <div style="
+                border:1px solid #e3e6eb;
+                border-radius:14px;
+                padding:18px;
+                margin-bottom:14px;
+                background:#fff;
+            ">
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    gap:10px;
+                    flex-wrap:wrap;
+                    margin-bottom:10px;
+                ">
+
+                    <strong>
+                        Soal ${index + 1}
+                    </strong>
+
+                    <div>
+                        <span style="
+                            background:#eef4ff;
+                            padding:5px 9px;
+                            border-radius:8px;
+                            font-size:12px;
+                        ">
+                            ${question.level}
+                        </span>
+
+                        <span style="
+                            background:#fff5d6;
+                            padding:5px 9px;
+                            border-radius:8px;
+                            font-size:12px;
+                        ">
+                            ${question.subject_name}
+                        </span>
+
+                        <span style="
+                            background:#f1f1f1;
+                            padding:5px 9px;
+                            border-radius:8px;
+                            font-size:12px;
+                        ">
+                            ${difficultyText[question.difficulty] || question.difficulty || "-"}
+                        </span>
+                    </div>
+
+                </div>
+
+                <div style="
+                    font-size:16px;
+                    line-height:1.6;
+                    margin-bottom:12px;
+                ">
+                    ${escapeQuestionBankHTML(question.question_text)}
+                </div>
+
+                <div style="
+                    display:grid;
+                    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+                    gap:7px;
+                    font-size:14px;
+                    color:#555;
+                ">
+
+                    <div>A. ${escapeQuestionBankHTML(question.option_a || "")}</div>
+                    <div>B. ${escapeQuestionBankHTML(question.option_b || "")}</div>
+                    <div>C. ${escapeQuestionBankHTML(question.option_c || "")}</div>
+                    <div>D. ${escapeQuestionBankHTML(question.option_d || "")}</div>
+                    <div>E. ${escapeQuestionBankHTML(question.option_e || "")}</div>
+
+                </div>
+
+                <details style="margin-top:14px;">
+
+                    <summary style="
+                        cursor:pointer;
+                        font-weight:bold;
+                        color:#b8860b;
+                    ">
+                        💡 Lihat Jawaban & Pembahasan
+                    </summary>
+
+                    <div style="
+                        margin-top:10px;
+                        padding:12px;
+                        background:#fafafa;
+                        border-radius:10px;
+                    ">
+                        <strong>Jawaban:</strong>
+                        ${escapeQuestionBankHTML(question.correct_answer || "-")}
+                        <br><br>
+                        <strong>Pembahasan:</strong><br>
+                        ${escapeQuestionBankHTML(question.explanation || "Belum ada pembahasan.")}
+                    </div>
+
+                </details>
+
+            </div>
+        `;
+
+    }).join("");
+}
+
+
+function escapeQuestionBankHTML(text) {
+
+    return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/\n/g, "<br>");
+}
 </script>
     <!-- SUPABASE CONNECTION -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

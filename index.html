@@ -2375,7 +2375,42 @@ function renderQuestionBank(questions) {
                     </div>
 
                 </details>
+<div style="
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+    flex-wrap:wrap;
+">
+    <button
+        type="button"
+        onclick="editQuestionBank(${question.id})"
+        style="
+            background:#eaf2ff;
+            color:#2457a6;
+            border:1px solid #c9dcff;
+            border-radius:9px;
+            padding:9px 16px;
+            font-weight:bold;
+            cursor:pointer;
+        ">
+        ✏️ EDIT
+    </button>
 
+    <button
+        type="button"
+        onclick="deleteQuestionBank(${question.id})"
+        style="
+            background:#fff0f0;
+            color:#c62828;
+            border:1px solid #ffcaca;
+            border-radius:9px;
+            padding:9px 16px;
+            font-weight:bold;
+            cursor:pointer;
+        ">
+        🗑️ HAPUS
+    </button>
+</div>
             </div>
         `;
 
@@ -2392,6 +2427,138 @@ function escapeQuestionBankHTML(text) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;")
         .replace(/\n/g, "<br>");
+}
+// ========================================
+// EDIT SOAL BANK SOAL
+// ========================================
+
+async function editQuestionBank(questionId) {
+
+    const question = questionBankData.find(function(item) {
+        return String(item.id) === String(questionId);
+    });
+
+    if (!question) {
+        alert("❌ Data soal tidak ditemukan.");
+        return;
+    }
+
+    const newQuestion = prompt(
+        "EDIT SOAL\n\nMasukkan teks soal:",
+        question.question_text || ""
+    );
+
+    if (newQuestion === null) return;
+
+    const newA = prompt(
+        "EDIT PILIHAN A:",
+        question.option_a || ""
+    );
+
+    if (newA === null) return;
+
+    const newB = prompt(
+        "EDIT PILIHAN B:",
+        question.option_b || ""
+    );
+
+    if (newB === null) return;
+
+    const newC = prompt(
+        "EDIT PILIHAN C:",
+        question.option_c || ""
+    );
+
+    if (newC === null) return;
+
+    const newD = prompt(
+        "EDIT PILIHAN D:",
+        question.option_d || ""
+    );
+
+    if (newD === null) return;
+
+    const newE = prompt(
+        "EDIT PILIHAN E:",
+        question.option_e || ""
+    );
+
+    if (newE === null) return;
+
+    const newAnswer = prompt(
+        "JAWABAN BENAR (A/B/C/D/E):",
+        question.correct_answer || ""
+    );
+
+    if (newAnswer === null) return;
+
+    const newExplanation = prompt(
+        "PEMBAHASAN:",
+        question.explanation || ""
+    );
+
+    if (newExplanation === null) return;
+
+    const newDifficulty = prompt(
+        "KESULITAN (easy / medium / hard):",
+        question.difficulty || "medium"
+    );
+
+    if (newDifficulty === null) return;
+
+    const newPoints = prompt(
+        "POIN:",
+        question.points || 1
+    );
+
+    if (newPoints === null) return;
+
+    const answer = newAnswer.trim().toUpperCase();
+
+    if (!["A", "B", "C", "D", "E"].includes(answer)) {
+        alert("❌ Jawaban benar harus A, B, C, D, atau E.");
+        return;
+    }
+
+    const difficulty = newDifficulty.trim().toLowerCase();
+
+    if (!["easy", "medium", "hard"].includes(difficulty)) {
+        alert("❌ Kesulitan harus easy, medium, atau hard.");
+        return;
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("questions")
+        .update({
+            question_text: newQuestion.trim(),
+            option_a: newA.trim(),
+            option_b: newB.trim(),
+            option_c: newC.trim(),
+            option_d: newD.trim(),
+            option_e: newE.trim(),
+            correct_answer: answer,
+            explanation: newExplanation.trim(),
+            difficulty: difficulty,
+            points: Number(newPoints) || 1
+        })
+        .eq("id", questionId)
+        .select()
+        .single();
+
+    if (error) {
+        alert(
+            "❌ Soal belum berhasil diperbarui.\n\n" +
+            error.message
+        );
+        return;
+    }
+
+    alert("✅ Soal berhasil diperbarui di database Gold Generation CBT!");
+
+    await loadQuestionBank();
 }
 </script>
     <!-- SUPABASE CONNECTION -->

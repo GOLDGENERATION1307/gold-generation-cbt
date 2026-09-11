@@ -1940,7 +1940,27 @@ function clearTeacherForm() {
     document.getElementById("teacherPoints").value = 1;
 
 }
+// ========================================
+// BUAT TRY OUT
+// ========================================
 
+function openCreateExam() {
+  const examName = prompt(
+    "BUAT TRY OUT\n\nMasukkan nama Try Out:"
+  );
+
+  if (examName === null) return;
+
+  if (!examName.trim()) {
+    alert("❌ Nama Try Out belum diisi.");
+    return;
+  }
+
+  alert(
+    "✅ Form Buat Try Out berhasil dibuka.\n\n" +
+    "Nama Try Out: " + examName
+  );
+}
 // ========================================
 // BANK SOAL PENGAJAR
 // ========================================

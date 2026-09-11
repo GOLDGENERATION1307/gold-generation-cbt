@@ -2560,6 +2560,52 @@ async function editQuestionBank(questionId) {
 
     await loadQuestionBank();
 }
+// ========================================
+// HAPUS SOAL BANK SOAL
+// ========================================
+
+async function deleteQuestionBank(questionId) {
+
+    const question = questionBankData.find(function(item) {
+        return String(item.id) === String(questionId);
+    });
+
+    if (!question) {
+        alert("❌ Data soal tidak ditemukan.");
+        return;
+    }
+
+    const confirmDelete = confirm(
+        "⚠️ HAPUS SOAL\n\n" +
+        "Apakah Anda yakin ingin menghapus soal ini?\n\n" +
+        question.question_text
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    const {
+        error
+    } = await supabaseClient
+        .from("questions")
+        .delete()
+        .eq("id", questionId);
+
+    if (error) {
+        alert(
+            "❌ Soal belum berhasil dihapus.\n\n" +
+            error.message
+        );
+        return;
+    }
+
+    alert(
+        "✅ Soal berhasil dihapus dari database Gold Generation CBT!"
+    );
+
+    await loadQuestionBank();
+}
 </script>
     <!-- SUPABASE CONNECTION -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

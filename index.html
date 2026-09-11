@@ -1363,7 +1363,8 @@ function showReview() {
             <h2>👨‍🏫 Dashboard Pengajar</h2>
             <div>GOLD GENERATION CBT</div>
         </div>
-<div style="margin: 15px 0; text-align: center;">
+<div style="margin: 15px 0; text-align: center; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+
     <button
         type="button"
         onclick="openQuestionBank()"
@@ -1377,9 +1378,29 @@ function showReview() {
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        ">
+        "
+    >
         📚 BANK SOAL
     </button>
+
+    <button
+        type="button"
+        onclick="openCreateExam()"
+        style="
+            background: linear-gradient(135deg, #2563eb, #60a5fa);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 22px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        "
+    >
+        ➕ BUAT TRY OUT
+    </button>
+
 </div>
         <div class="question-counter">
             Soal <span id="teacherQuestionNumber">1</span> dari 30

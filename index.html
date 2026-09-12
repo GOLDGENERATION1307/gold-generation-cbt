@@ -2289,7 +2289,13 @@ function closeCreateExam() {
 // LANJUT KE PILIH SOAL
 // ========================================
 
-function prepareCreateExam() {
+// ========================================
+// PILIH SOAL DARI BANK SOAL
+// ========================================
+
+let createExamDraft = null;
+
+async function prepareCreateExam() {
 
   const name =
     document.getElementById("createExamName").value.trim();
@@ -2301,10 +2307,10 @@ function prepareCreateExam() {
     document.getElementById("createExamSubject").value;
 
   const duration =
-    document.getElementById("createExamDuration").value;
+    Number(document.getElementById("createExamDuration").value);
 
   const count =
-    document.getElementById("createExamQuestionCount").value;
+    Number(document.getElementById("createExamQuestionCount").value);
 
   if (!name) {
     alert("❌ Nama Try Out belum diisi.");
@@ -2321,14 +2327,388 @@ function prepareCreateExam() {
     return;
   }
 
+  try {
+
+    // Cari ID mata pelajaran
+    const {
+      data: subjectData,
+      error: subjectError
+    } = await supabaseClient
+      .from("subjects")
+      .select("id, name, level")
+      .eq("name", subject)
+      .eq("level", level)
+      .limit(1);
+
+    if (subjectError) {
+      alert(
+        "❌ Gagal mencari mata pelajaran.\n\n" +
+        subjectError.message
+      );
+      return;
+    }
+
+    if (!subjectData || subjectData.length === 0) {
+      alert(
+        "❌ Mata pelajaran tidak ditemukan di database Supabase."
+      );
+      return;
+    }
+
+    const subjectId = subjectData[0].id;
+
+    // Ambil soal dari Bank Soal
+    const {
+      data: questions,
+      error: questionError
+    } = await supabaseClient
+      .from("questions")
+      .select("*")
+      .eq("subject_id", subjectId)
+      .order("id", { ascending: true });
+
+    if (questionError) {
+      alert(
+        "❌ Gagal mengambil Bank Soal.\n\n" +
+        questionError.message
+      );
+      return;
+    }
+
+    if (!questions || questions.length === 0) {
+      alert(
+        "⚠️ Belum ada soal untuk mata pelajaran " +
+        subject +
+        " di Bank Soal."
+      );
+      return;
+    }
+
+    if (questions.length < count) {
+      alert(
+        "⚠️ Jumlah soal belum mencukupi.\n\n" +
+        "Permintaan: " + count + " soal\n" +
+        "Tersedia: " + questions.length + " soal\n\n" +
+        "Tambahkan soal terlebih dahulu ke Bank Soal."
+      );
+      return;
+    }
+
+    createExamDraft = {
+      name: name,
+      level: level,
+      subject: subject,
+      subjectId: subjectId,
+      duration: duration,
+      count: count,
+      questions: questions
+    };
+
+    renderCreateExamQuestionPicker();
+
+  } catch (error) {
+
+    alert(
+      "❌ Terjadi kesalahan.\n\n" +
+      error.message
+    );
+
+  }
+}
+
+
+// ========================================
+// TAMPILKAN PILIHAN SOAL
+// ========================================
+
+function renderCreateExamQuestionPicker() {
+
+  const modal =
+    document.getElementById("createExamModal");
+
+  if (!modal || !createExamDraft) return;
+
+  const draft = createExamDraft;
+
+  modal.innerHTML = `
+    <div style="
+      width:min(900px,100%);
+      max-height:92vh;
+      overflow-y:auto;
+      background:white;
+      border-radius:20px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.3);
+    ">
+
+      <div style="
+        background:linear-gradient(135deg,#172554,#2563eb);
+        color:white;
+        padding:22px 25px;
+        border-radius:20px 20px 0 0;
+      ">
+
+        <h2 style="margin:0;">
+          📚 PILIH SOAL TRY OUT
+        </h2>
+
+        <p style="
+          margin:8px 0 0;
+          opacity:.9;
+        ">
+          ${draft.name}
+        </p>
+
+      </div>
+
+      <div style="padding:25px;">
+
+        <div style="
+          background:#eff6ff;
+          border-left:5px solid #2563eb;
+          padding:15px;
+          border-radius:10px;
+          margin-bottom:20px;
+        ">
+
+          <strong>
+            ${draft.subject} • ${draft.level}
+          </strong>
+
+          <div style="
+            margin-top:5px;
+            color:#475569;
+          ">
+            Pilih tepat
+            <strong>${draft.count}</strong>
+            soal dari
+            <strong>${draft.questions.length}</strong>
+            soal yang tersedia.
+          </div>
+
+        </div>
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:15px;
+          gap:10px;
+          flex-wrap:wrap;
+        ">
+
+          <strong style="font-size:18px;">
+            Soal Bank Soal
+          </strong>
+
+          <span id="selectedQuestionCounter"
+            style="
+              background:#dbeafe;
+              color:#1d4ed8;
+              padding:8px 13px;
+              border-radius:20px;
+              font-weight:bold;
+            ">
+            0 / ${draft.count} dipilih
+          </span>
+
+        </div>
+
+        <div id="createExamQuestionList">
+
+          ${draft.questions.map(function(q, index) {
+
+            const safeText =
+              (q.question_text || "")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            return `
+              <label style="
+                display:block;
+                border:1px solid #e2e8f0;
+                border-radius:12px;
+                padding:15px;
+                margin-bottom:12px;
+                cursor:pointer;
+                background:#f8fafc;
+              ">
+
+                <div style="
+                  display:flex;
+                  gap:12px;
+                  align-items:flex-start;
+                ">
+
+                  <input
+                    type="checkbox"
+                    class="createExamQuestionCheck"
+                    value="${q.id}"
+                    onchange="updateSelectedQuestionCounter()"
+                    style="
+                      width:20px;
+                      height:20px;
+                      margin-top:3px;
+                    "
+                  >
+
+                  <div style="flex:1;">
+
+                    <strong>
+                      Soal ${index + 1}
+                    </strong>
+
+                    <div style="
+                      margin-top:7px;
+                      line-height:1.5;
+                      color:#334155;
+                    ">
+                      ${safeText}
+                    </div>
+
+                    <div style="
+                      margin-top:8px;
+                      font-size:13px;
+                      color:#64748b;
+                    ">
+                      Kesulitan:
+                      ${q.difficulty || "medium"}
+                      • Poin:
+                      ${q.points || 1}
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </label>
+            `;
+
+          }).join("")}
+
+        </div>
+
+        <div style="
+          display:flex;
+          justify-content:flex-end;
+          gap:10px;
+          margin-top:25px;
+          flex-wrap:wrap;
+        ">
+
+          <button
+            type="button"
+            onclick="closeCreateExam()"
+            style="
+              border:none;
+              background:#e5e7eb;
+              padding:12px 20px;
+              border-radius:10px;
+              font-weight:bold;
+              cursor:pointer;
+            "
+          >
+            ✖ BATAL
+          </button>
+
+          <button
+            type="button"
+            onclick="confirmSelectedExamQuestions()"
+            style="
+              border:none;
+              background:linear-gradient(135deg,#16a34a,#22c55e);
+              color:white;
+              padding:12px 22px;
+              border-radius:10px;
+              font-weight:bold;
+              cursor:pointer;
+            "
+          >
+            ✅ LANJUT SIMPAN TRY OUT
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+
+// ========================================
+// HITUNG SOAL YANG DIPILIH
+// ========================================
+
+function updateSelectedQuestionCounter() {
+
+  const checks =
+    document.querySelectorAll(
+      ".createExamQuestionCheck:checked"
+    );
+
+  const counter =
+    document.getElementById(
+      "selectedQuestionCounter"
+    );
+
+  if (!counter || !createExamDraft) return;
+
+  counter.textContent =
+    checks.length +
+    " / " +
+    createExamDraft.count +
+    " dipilih";
+
+}
+
+
+// ========================================
+// KONFIRMASI SOAL YANG DIPILIH
+// ========================================
+
+function confirmSelectedExamQuestions() {
+
+  if (!createExamDraft) return;
+
+  const checks =
+    document.querySelectorAll(
+      ".createExamQuestionCheck:checked"
+    );
+
+  if (checks.length !== createExamDraft.count) {
+
+    alert(
+      "⚠️ Jumlah soal belum sesuai.\n\n" +
+      "Harus memilih: " +
+      createExamDraft.count +
+      " soal\n" +
+      "Saat ini dipilih: " +
+      checks.length +
+      " soal."
+    );
+
+    return;
+  }
+
+  const selectedIds =
+    Array.from(checks).map(function(check) {
+      return Number(check.value);
+    });
+
+  createExamDraft.selectedQuestionIds =
+    selectedIds;
+
   alert(
-    "✅ DATA TRY OUT SIAP\n\n" +
-    "Nama: " + name + "\n" +
-    "Jenjang: " + level + "\n" +
-    "Mata Pelajaran: " + subject + "\n" +
-    "Durasi: " + duration + " menit\n" +
-    "Jumlah Soal: " + count + "\n\n" +
-    "Tahap berikutnya: memilih soal dari Bank Soal."
+    "✅ SOAL BERHASIL DIPILIH\n\n" +
+    "Try Out: " +
+    createExamDraft.name +
+    "\n" +
+    "Mata Pelajaran: " +
+    createExamDraft.subject +
+    "\n" +
+    "Jumlah Soal: " +
+    selectedIds.length +
+    "\n\n" +
+    "Tahap berikutnya: menyimpan Try Out ke Supabase."
   );
 
 }

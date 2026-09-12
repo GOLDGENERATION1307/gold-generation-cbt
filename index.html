@@ -1944,22 +1944,393 @@ function clearTeacherForm() {
 // BUAT TRY OUT
 // ========================================
 
+// ========================================
+// FORM BUAT TRY OUT
+// ========================================
+
 function openCreateExam() {
-  const examName = prompt(
-    "BUAT TRY OUT\n\nMasukkan nama Try Out:"
-  );
 
-  if (examName === null) return;
+  const oldModal = document.getElementById("createExamModal");
 
-  if (!examName.trim()) {
+  if (oldModal) {
+    oldModal.remove();
+  }
+
+  const modal = document.createElement("div");
+  modal.id = "createExamModal";
+
+  modal.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 30000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      width: min(850px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    ">
+
+      <div style="
+        background: linear-gradient(135deg,#172554,#2563eb);
+        color: white;
+        padding: 22px 25px;
+        border-radius: 20px 20px 0 0;
+      ">
+        <h2 style="margin:0; font-size:25px;">
+          📝 BUAT TRY OUT
+        </h2>
+
+        <p style="margin:7px 0 0; opacity:0.9;">
+          Buat Try Out baru menggunakan Bank Soal Gold Generation
+        </p>
+      </div>
+
+      <div style="padding:25px;">
+
+        <!-- NAMA TRY OUT -->
+        <label style="
+          display:block;
+          font-weight:bold;
+          margin-bottom:7px;
+        ">
+          Nama Try Out
+        </label>
+
+        <input
+          id="createExamName"
+          type="text"
+          placeholder="Contoh: TRY OUT TKA MATEMATIKA 1"
+          style="
+            width:100%;
+            box-sizing:border-box;
+            padding:13px;
+            border:1px solid #d1d5db;
+            border-radius:10px;
+            margin-bottom:18px;
+            font-size:15px;
+          "
+        >
+
+        <!-- JENJANG -->
+        <label style="
+          display:block;
+          font-weight:bold;
+          margin-bottom:7px;
+        ">
+          Jenjang
+        </label>
+
+        <select
+          id="createExamLevel"
+          onchange="updateCreateExamSubjects()"
+          style="
+            width:100%;
+            box-sizing:border-box;
+            padding:13px;
+            border:1px solid #d1d5db;
+            border-radius:10px;
+            margin-bottom:18px;
+            font-size:15px;
+          "
+        >
+          <option value="SMA">SMA</option>
+          <option value="SMP">SMP</option>
+          <option value="UTBK">UTBK</option>
+        </select>
+
+        <!-- MATA PELAJARAN -->
+        <label style="
+          display:block;
+          font-weight:bold;
+          margin-bottom:7px;
+        ">
+          Mata Pelajaran
+        </label>
+
+        <select
+          id="createExamSubject"
+          style="
+            width:100%;
+            box-sizing:border-box;
+            padding:13px;
+            border:1px solid #d1d5db;
+            border-radius:10px;
+            margin-bottom:18px;
+            font-size:15px;
+          "
+        ></select>
+
+        <div style="
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:18px;
+        ">
+
+          <!-- DURASI -->
+          <div>
+            <label style="
+              display:block;
+              font-weight:bold;
+              margin-bottom:7px;
+            ">
+              Durasi (menit)
+            </label>
+
+            <input
+              id="createExamDuration"
+              type="number"
+              min="1"
+              value="60"
+              style="
+                width:100%;
+                box-sizing:border-box;
+                padding:13px;
+                border:1px solid #d1d5db;
+                border-radius:10px;
+                font-size:15px;
+              "
+            >
+          </div>
+
+          <!-- JUMLAH SOAL -->
+          <div>
+            <label style="
+              display:block;
+              font-weight:bold;
+              margin-bottom:7px;
+            ">
+              Jumlah Soal
+            </label>
+
+            <input
+              id="createExamQuestionCount"
+              type="number"
+              min="1"
+              value="30"
+              style="
+                width:100%;
+                box-sizing:border-box;
+                padding:13px;
+                border:1px solid #d1d5db;
+                border-radius:10px;
+                font-size:15px;
+              "
+            >
+          </div>
+
+        </div>
+
+        <!-- STATUS -->
+        <div style="
+          margin-top:20px;
+          padding:15px;
+          background:#eff6ff;
+          border-radius:12px;
+          border-left:5px solid #2563eb;
+        ">
+          <strong>📚 Bank Soal</strong>
+
+          <div style="
+            margin-top:5px;
+            color:#475569;
+          ">
+            Setelah Try Out dibuat, kita akan memilih soal
+            langsung dari Bank Soal Gold Generation.
+          </div>
+        </div>
+
+        <!-- BUTTON -->
+        <div style="
+          display:flex;
+          justify-content:flex-end;
+          gap:10px;
+          margin-top:25px;
+          flex-wrap:wrap;
+        ">
+
+          <button
+            type="button"
+            onclick="closeCreateExam()"
+            style="
+              border:none;
+              background:#e5e7eb;
+              color:#172033;
+              padding:12px 22px;
+              border-radius:10px;
+              font-weight:bold;
+              cursor:pointer;
+            "
+          >
+            ✖ BATAL
+          </button>
+
+          <button
+            type="button"
+            onclick="prepareCreateExam()"
+            style="
+              border:none;
+              background:linear-gradient(135deg,#2563eb,#60a5fa);
+              color:white;
+              padding:12px 22px;
+              border-radius:10px;
+              font-weight:bold;
+              cursor:pointer;
+            "
+          >
+            ➡️ LANJUT PILIH SOAL
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  updateCreateExamSubjects();
+}
+
+
+// ========================================
+// MATA PELAJARAN BUAT TRY OUT
+// ========================================
+
+function updateCreateExamSubjects() {
+
+  const level =
+    document.getElementById("createExamLevel");
+
+  const subject =
+    document.getElementById("createExamSubject");
+
+  if (!level || !subject) return;
+
+  const subjects = {
+
+    SMA: [
+      "Matematika Wajib",
+      "Matematika Lanjut",
+      "Bahasa Indonesia",
+      "Bahasa Inggris",
+      "Bahasa Inggris Lanjut",
+      "Kimia",
+      "Fisika",
+      "Biologi",
+      "Sejarah",
+      "Sejarah Lanjut",
+      "Geografi",
+      "Ekonomi",
+      "Sosiologi"
+    ],
+
+    SMP: [
+      "IPA",
+      "IPS",
+      "Matematika",
+      "Bahasa Indonesia",
+      "Bahasa Inggris"
+    ],
+
+    UTBK: [
+      "Penalaran Matematika",
+      "Literasi Bahasa Indonesia",
+      "Literasi Bahasa Inggris",
+      "Penalaran Umum",
+      "Pengetahuan dan Pemahaman Umum",
+      "Pemahaman Bacaan dan Menulis",
+      "Pengetahuan Kuantitatif"
+    ]
+
+  };
+
+  subject.innerHTML = "";
+
+  subjects[level.value].forEach(function(name) {
+
+    const option = document.createElement("option");
+
+    option.value = name;
+    option.textContent = name;
+
+    subject.appendChild(option);
+
+  });
+}
+
+
+// ========================================
+// TUTUP FORM BUAT TRY OUT
+// ========================================
+
+function closeCreateExam() {
+
+  const modal =
+    document.getElementById("createExamModal");
+
+  if (modal) {
+    modal.remove();
+  }
+}
+
+
+// ========================================
+// LANJUT KE PILIH SOAL
+// ========================================
+
+function prepareCreateExam() {
+
+  const name =
+    document.getElementById("createExamName").value.trim();
+
+  const level =
+    document.getElementById("createExamLevel").value;
+
+  const subject =
+    document.getElementById("createExamSubject").value;
+
+  const duration =
+    document.getElementById("createExamDuration").value;
+
+  const count =
+    document.getElementById("createExamQuestionCount").value;
+
+  if (!name) {
     alert("❌ Nama Try Out belum diisi.");
     return;
   }
 
+  if (!duration || duration < 1) {
+    alert("❌ Durasi Try Out belum benar.");
+    return;
+  }
+
+  if (!count || count < 1) {
+    alert("❌ Jumlah soal belum benar.");
+    return;
+  }
+
   alert(
-    "✅ Form Buat Try Out berhasil dibuka.\n\n" +
-    "Nama Try Out: " + examName
+    "✅ DATA TRY OUT SIAP\n\n" +
+    "Nama: " + name + "\n" +
+    "Jenjang: " + level + "\n" +
+    "Mata Pelajaran: " + subject + "\n" +
+    "Durasi: " + duration + " menit\n" +
+    "Jumlah Soal: " + count + "\n\n" +
+    "Tahap berikutnya: memilih soal dari Bank Soal."
   );
+
 }
 // ========================================
 // BANK SOAL PENGAJAR

@@ -2665,9 +2665,16 @@ function updateSelectedQuestionCounter() {
 // KONFIRMASI SOAL YANG DIPILIH
 // ========================================
 
-function confirmSelectedExamQuestions() {
+// ========================================
+// SIMPAN TRY OUT KE SUPABASE
+// ========================================
 
-  if (!createExamDraft) return;
+async function confirmSelectedExamQuestions() {
+
+  if (!createExamDraft) {
+    alert("❌ Data Try Out tidak ditemukan.");
+    return;
+  }
 
   const checks =
     document.querySelectorAll(
@@ -2697,19 +2704,124 @@ function confirmSelectedExamQuestions() {
   createExamDraft.selectedQuestionIds =
     selectedIds;
 
-  alert(
-    "✅ SOAL BERHASIL DIPILIH\n\n" +
-    "Try Out: " +
-    createExamDraft.name +
-    "\n" +
-    "Mata Pelajaran: " +
-    createExamDraft.subject +
-    "\n" +
-    "Jumlah Soal: " +
-    selectedIds.length +
-    "\n\n" +
-    "Tahap berikutnya: menyimpan Try Out ke Supabase."
-  );
+  try {
+
+    // ------------------------------------
+    // 1. SIMPAN DATA TRY OUT
+    // ------------------------------------
+
+    const {
+      data: examData,
+      error: examError
+    } = await supabaseClient
+      .from("exams")
+      .insert([
+        {
+          name: createExamDraft.name,
+          subject_id: createExamDraft.subjectId,
+          duration: createExamDraft.duration,
+          published: false
+        }
+      ])
+      .select()
+      .single();
+
+    if (examError) {
+
+      alert(
+        "❌ Try Out belum berhasil disimpan.\n\n" +
+        examError.message
+      );
+
+      return;
+    }
+
+    const examId = examData.id;
+
+
+    // ------------------------------------
+    // 2. SIAPKAN SOAL TRY OUT
+    // ------------------------------------
+
+    const examQuestions =
+      selectedIds.map(function(questionId, index) {
+
+        const question =
+          createExamDraft.questions.find(function(q) {
+            return Number(q.id) === Number(questionId);
+          });
+
+        return {
+          exam_id: examId,
+          question_id: questionId,
+          question_number: index + 1,
+          points: question && question.points
+            ? question.points
+            : 1
+        };
+
+      });
+
+
+    // ------------------------------------
+    // 3. SIMPAN SOAL KE EXAM_QUESTIONS
+    // ------------------------------------
+
+    const {
+      error: examQuestionsError
+    } = await supabaseClient
+      .from("exam_questions")
+      .insert(examQuestions);
+
+    if (examQuestionsError) {
+
+      alert(
+        "⚠️ Try Out sudah dibuat, tetapi soal belum berhasil dimasukkan.\n\n" +
+        examQuestionsError.message +
+        "\n\nID Try Out: " +
+        examId
+      );
+
+      return;
+    }
+
+
+    // ------------------------------------
+    // 4. BERHASIL
+    // ------------------------------------
+
+    alert(
+      "🎉 TRY OUT BERHASIL DISIMPAN!\n\n" +
+      "Nama: " +
+      createExamDraft.name +
+      "\n" +
+      "Jenjang: " +
+      createExamDraft.level +
+      "\n" +
+      "Mata Pelajaran: " +
+      createExamDraft.subject +
+      "\n" +
+      "Durasi: " +
+      createExamDraft.duration +
+      " menit\n" +
+      "Jumlah Soal: " +
+      selectedIds.length +
+      "\n\n" +
+      "Try Out tersimpan di database Gold Generation CBT."
+    );
+
+    closeCreateExam();
+
+    createExamDraft = null;
+
+  } catch (error) {
+
+    alert(
+      "❌ Terjadi kesalahan saat menyimpan Try Out.\n\n" +
+      error.message
+    );
+
+  }
 
 }
 // ========================================

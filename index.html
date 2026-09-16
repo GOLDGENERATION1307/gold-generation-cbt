@@ -2710,21 +2710,21 @@ async function confirmSelectedExamQuestions() {
     // 1. SIMPAN DATA TRY OUT
     // ------------------------------------
 
-    const {
-      data: examData,
-      error: examError
-    } = await supabaseClient
-      .from("exams")
-      .insert([
-        {
-          name: createExamDraft.name,
-          subject_id: createExamDraft.subjectId,
-          duration: createExamDraft.duration,
-          published: false
-        }
-      ])
-      .select()
-      .single();
+   const {
+  data: examData,
+  error: examError
+} = await supabaseClient
+  .from("exams")
+  .insert([
+    {
+      title: createExamDraft.name,
+      subject_id: createExamDraft.subjectId,
+      duration_minutes: createExamDraft.duration,
+      is_published: false
+    }
+  ])
+  .select()
+  .single();
 
     if (examError) {
 
